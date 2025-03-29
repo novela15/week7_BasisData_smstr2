@@ -1,0 +1,301 @@
+Microsoft Windows [Version 10.0.22631.5039]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\lenovo>CD C:\xampp\mysql\bin
+
+C:\xampp\mysql\bin>mysql -u root -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> create database UTS2420506040;
+Query OK, 1 row affected (0.021 sec)
+
+MariaDB [(none)]> use uts2420506040;
+Database changed
+MariaDB [uts2420506040]> CREATE TABLE Anggota (
+    -> id_anggota VARCHAR(10) PRIMARY KEY,
+    -> nama VARCHAR(50) NOT NULL,
+    -> jurusan VARCHAR(20) DEFAULT 'Umum',
+    -> tgl_daftar DATE NOT NULL
+    -> );
+Query OK, 0 rows affected (0.094 sec)
+
+MariaDB [uts2420506040]> INSERT INTO Anggota (id_anggota, nama, jurusan, tgl_daftar) VALUES
+    -> ('A001', 'Novela', 'Teknologi Informasi', '2024-01-10'),
+    -> ('A002', 'Eka', 'Teknik Elektro', '2024-01-15'),
+    -> ('A003', 'Saputri', 'Teknik Industri', '2024-02-01');
+Query OK, 3 rows affected (0.139 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> select * from Anggota;
++------------+---------+---------------------+------------+
+| id_anggota | nama    | jurusan             | tgl_daftar |
++------------+---------+---------------------+------------+
+| A001       | Novela  | Teknologi Informasi | 2024-01-10 |
+| A002       | Eka     | Teknik Elektro      | 2024-01-15 |
+| A003       | Saputri | Teknik Industri     | 2024-02-01 |
++------------+---------+---------------------+------------+
+3 rows in set (0.009 sec)
+
+MariaDB [uts2420506040]> CREATE TABLE Buku (
+    -> id_buku VARCHAR(10) PRIMARY KEY,
+    -> judul VARCHAR(100) NOT NULL,
+    -> penerbit VARCHAR(50),
+    -> tahun_terbit INT CHECK (tahun_terbit BETWEEN 1900 AND 2025)
+    -> );
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [uts2420506040]> INSERT INTO Buku (id_buku, judul, penerbit, tahun_terbit) VALUES
+    -> ('B001', 'Basis Data', 'Gramedia', 2020),
+    -> ('B002', 'Pemrograman Java', 'Informatika', 2018),
+    -> ('B003', 'Machine Learning', 'Deep AI', 2021),
+    -> ('B004', 'Manajemen Proyek', 'Erlangga', 2019),
+    -> ('B005', 'Kecerdasan Buatan', 'Techno Press', 2022);
+Query OK, 5 rows affected (0.030 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> select * from Buku;
++---------+-------------------+--------------+--------------+
+| id_buku | judul             | penerbit     | tahun_terbit |
++---------+-------------------+--------------+--------------+
+| B001    | Basis Data        | Gramedia     |         2020 |
+| B002    | Pemrograman Java  | Informatika  |         2018 |
+| B003    | Machine Learning  | Deep AI      |         2021 |
+| B004    | Manajemen Proyek  | Erlangga     |         2019 |
+| B005    | Kecerdasan Buatan | Techno Press |         2022 |
++---------+-------------------+--------------+--------------+
+5 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> CREATE TABLE Peminjaman (
+    -> id_peminjaman INT PRIMARY KEY AUTO_INCREMENT,
+    -> id_anggota VARCHAR(10),
+    -> id_buku VARCHAR(10),
+    -> tgl_pinjam DATE NOT NULL,
+    -> tgl_kembali DATE,
+    -> denda INT DEFAULT 0,
+    -> FOREIGN KEY (id_anggota) REFERENCES Anggota(id_anggota),
+    -> FOREIGN KEY (id_buku) REFERENCES Buku(id_buku)
+    -> );
+Query OK, 0 rows affected (0.091 sec)
+
+MariaDB [uts2420506040]> INSERT INTO Peminjaman (id_anggota, id_buku, tgl_pinjam, tgl_kembali, denda) VALUES
+    -> ('A001', 'B001', '2024-03-01', '2024-03-10', 0),
+    -> ('A002', 'B002', '2024-03-05', '2024-03-15', 2000),
+    -> ('A003', 'B003', '2024-03-10', NULL, 0);
+Query OK, 3 rows affected (0.013 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> select * from Peminjaman;
++---------------+------------+---------+------------+-------------+-------+
+| id_peminjaman | id_anggota | id_buku | tgl_pinjam | tgl_kembali | denda |
++---------------+------------+---------+------------+-------------+-------+
+|             1 | A001       | B001    | 2024-03-01 | 2024-03-10  |     0 |
+|             2 | A002       | B002    | 2024-03-05 | 2024-03-15  |  2000 |
+|             3 | A003       | B003    | 2024-03-10 | NULL        |     0 |
++---------------+------------+---------+------------+-------------+-------+
+3 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> show tables;
++-------------------------+
+| Tables_in_uts2420506040 |
++-------------------------+
+| anggota                 |
+| buku                    |
+| peminjaman              |
++-------------------------+
+3 rows in set (0.008 sec)
+
+MariaDB [uts2420506040]> UPDATE Peminjaman SET denda = 2000 * 5 WHERE id_peminjaman = 2 AND tgl_kembali > '2024-03-12';
+Query OK, 1 row affected (0.014 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> select * from Peminjaman;
++---------------+------------+---------+------------+-------------+-------+
+| id_peminjaman | id_anggota | id_buku | tgl_pinjam | tgl_kembali | denda |
++---------------+------------+---------+------------+-------------+-------+
+|             1 | A001       | B001    | 2024-03-01 | 2024-03-10  |     0 |
+|             2 | A002       | B002    | 2024-03-05 | 2024-03-15  | 10000 |
+|             3 | A003       | B003    | 2024-03-10 | NULL        |     0 |
++---------------+------------+---------+------------+-------------+-------+
+3 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> SELECT a.nama, COUNT(p.id_buku) AS jumlah_buku_dipinjam
+    -> FROM Anggota a
+    -> JOIN Peminjaman p ON a.id_anggota = p.id_anggota
+    -> GROUP BY a.nama;
++---------+----------------------+
+| nama    | jumlah_buku_dipinjam |
++---------+----------------------+
+| Eka     |                    1 |
+| Novela  |                    1 |
+| Saputri |                    1 |
++---------+----------------------+
+3 rows in set (0.021 sec)
+
+MariaDB [uts2420506040]> SELECT AVG(DATEDIFF(tgl_kembali, tgl_pinjam)) AS rata_rata_hari
+    -> FROM Peminjaman
+    -> WHERE tgl_kembali IS NOT NULL;
++----------------+
+| rata_rata_hari |
++----------------+
+|         9.5000 |
++----------------+
+1 row in set (0.006 sec)
+
+MariaDB [uts2420506040]> SELECT b.judul, COUNT(p.id_buku) AS jumlah_peminjaman
+    -> FROM Buku b
+    -> JOIN Peminjaman p ON b.id_buku = p.id_buku
+    -> GROUP BY b.judul
+    -> ORDER BY jumlah_peminjaman DESC
+    -> LIMIT 1;
++------------+-------------------+
+| judul      | jumlah_peminjaman |
++------------+-------------------+
+| Basis Data |                 1 |
++------------+-------------------+
+1 row in set (0.006 sec)
+
+MariaDB [uts2420506040]> CREATE TABLE Penerbit (
+    -> id_penerbit VARCHAR(10) PRIMARY KEY,
+    -> nama_penerbit VARCHAR(50) NOT NULL,
+    -> alamat TEXT
+    -> );
+Query OK, 0 rows affected (0.032 sec)
+
+MariaDB [uts2420506040]> ALTER TABLE Buku ADD COLUMN id_penerbit VARCHAR(10);
+Query OK, 0 rows affected (0.017 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> ALTER TABLE Buku ADD FOREIGN KEY (id_penerbit) REFERENCES Penerbit(id_penerbit);
+Query OK, 5 rows affected (0.223 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> select * from penerbit;
+Empty set (0.006 sec)
+
+MariaDB [uts2420506040]> SELECT nama FROM Anggota WHERE id_anggota IN (
+    -> SELECT id_anggota FROM Peminjaman WHERE id_buku = 'B001'
+    -> );
++--------+
+| nama   |
++--------+
+| Novela |
++--------+
+1 row in set (0.006 sec)
+
+MariaDB [uts2420506040]> SELECT judul FROM Buku WHERE id_buku NOT IN (
+    -> SELECT id_buku FROM Peminjaman
+    -> );
++-------------------+
+| judul             |
++-------------------+
+| Manajemen Proyek  |
+| Kecerdasan Buatan |
++-------------------+
+2 rows in set (0.022 sec)
+
+MariaDB [uts2420506040]> UPDATE Peminjaman SET denda = 0 WHERE tgl_kembali <= DATE_ADD(tgl_pinjam, INTERVAL 7 DAY);
+Query OK, 0 rows affected (0.004 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+MariaDB [uts2420506040]> select * from peminjaman;
++---------------+------------+---------+------------+-------------+-------+
+| id_peminjaman | id_anggota | id_buku | tgl_pinjam | tgl_kembali | denda |
++---------------+------------+---------+------------+-------------+-------+
+|             1 | A001       | B001    | 2024-03-01 | 2024-03-10  |     0 |
+|             2 | A002       | B002    | 2024-03-05 | 2024-03-15  | 10000 |
+|             3 | A003       | B003    | 2024-03-10 | NULL        |     0 |
++---------------+------------+---------+------------+-------------+-------+
+3 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> INSERT INTO Penerbit (id_penerbit, nama_penerbit, alamat) VALUES
+    -> ('P001', 'Gramedia', 'Jakarta'),
+    -> ('P002', 'Informatika', 'Bandung');
+Query OK, 2 rows affected (0.009 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [uts2420506040]> SELECT * FROM Penerbit;
++-------------+---------------+---------+
+| id_penerbit | nama_penerbit | alamat  |
++-------------+---------------+---------+
+| P001        | Gramedia      | Jakarta |
+| P002        | Informatika   | Bandung |
++-------------+---------------+---------+
+2 rows in set (0.002 sec)
+
+MariaDB [uts2420506040]> SELECT Buku.id_buku, Buku.judul, Buku.id_penerbit, Penerbit.nama_penerbit
+    -> FROM Buku
+    -> LEFT JOIN Penerbit ON Buku.id_penerbit = Penerbit.id_penerbit;
++---------+-------------------+-------------+---------------+
+| id_buku | judul             | id_penerbit | nama_penerbit |
++---------+-------------------+-------------+---------------+
+| B001    | Basis Data        | NULL        | NULL          |
+| B002    | Pemrograman Java  | NULL        | NULL          |
+| B003    | Machine Learning  | NULL        | NULL          |
+| B004    | Manajemen Proyek  | NULL        | NULL          |
+| B005    | Kecerdasan Buatan | NULL        | NULL          |
++---------+-------------------+-------------+---------------+
+5 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> UPDATE Buku SET id_penerbit = 'P001' WHERE id_buku = 'B001';
+Query OK, 1 row affected (0.006 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> UPDATE Buku SET id_penerbit = 'P001' WHERE id_buku = 'B002';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> UPDATE Buku SET id_penerbit = 'P002' WHERE id_buku = 'B003';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> UPDATE Buku SET id_penerbit = 'P002' WHERE id_buku = 'B004';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> UPDATE Buku SET id_penerbit = 'P001' WHERE id_buku = 'B005';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [uts2420506040]> SELECT Buku.id_buku, Buku.judul, Penerbit.nama_penerbit
+    -> FROM Buku
+    -> INNER JOIN Penerbit ON Buku.id_penerbit = Penerbit.id_penerbit;
++---------+-------------------+---------------+
+| id_buku | judul             | nama_penerbit |
++---------+-------------------+---------------+
+| B001    | Basis Data        | Gramedia      |
+| B002    | Pemrograman Java  | Gramedia      |
+| B003    | Machine Learning  | Informatika   |
+| B004    | Manajemen Proyek  | Informatika   |
+| B005    | Kecerdasan Buatan | Gramedia      |
++---------+-------------------+---------------+
+5 rows in set (0.001 sec)
+
+MariaDB [uts2420506040]> SELECT
+    -> t.id_peminjaman,
+    -> a.id_anggota,
+    -> b.judul,
+    -> p.id_penerbit,
+    -> t.tgl_pinjam,
+    -> t.tgl_kembali,
+    -> t.denda
+    -> FROM Peminjaman t
+    -> JOIN Anggota a ON t.id_anggota = a.id_anggota
+    -> JOIN Buku b ON t.id_buku = b.id_buku
+    -> JOIN Penerbit p ON b.id_penerbit = p.id_penerbit;
++---------------+------------+------------------+-------------+------------+-------------+-------+
+| id_peminjaman | id_anggota | judul            | id_penerbit | tgl_pinjam | tgl_kembali | denda |
++---------------+------------+------------------+-------------+------------+-------------+-------+
+|             1 | A001       | Basis Data       | P001        | 2024-03-01 | 2024-03-10  |     0 |
+|             2 | A002       | Pemrograman Java | P001        | 2024-03-05 | 2024-03-15  | 10000 |
+|             3 | A003       | Machine Learning | P002        | 2024-03-10 | NULL        |     0 |
++---------------+------------+------------------+-------------+------------+-------------+-------+
+3 rows in set (0.012 sec)
+
+MariaDB [uts2420506040]>
